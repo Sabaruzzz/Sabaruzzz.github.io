@@ -173,7 +173,10 @@
         #module-modal.active .modal-content { transform:scale(1) translateY(0); }
 
         /* ── Misc ───────────────────────────────── */
-        #typewriter { display:inline-block; min-height:1.1em; white-space:nowrap; }
+        #typewriter { display:inline-block; min-height:1.1em; white-space:nowrap; position:relative; }
+        /* Fixes the page jump when the typewriter deletes all text */
+        #typewriter::after { content: '\200B'; }
+        
         .hero-gradient { background:linear-gradient(135deg,#fff 0%,rgba(255,255,255,.6) 70%,rgba(255,255,255,.3) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
         .stat-item { border-right:1px solid rgba(255,255,255,.07); }
         .stat-item:last-child { border-right:none; }
@@ -203,7 +206,7 @@
         </div>
         <div class="intro-text flex flex-col">
             <h1 class="text-6xl sm:text-8xl font-display font-bold tracking-[0.18em] text-white text-glow-intense leading-none">AZYRA</h1>
-            <span class="text-[0.62rem] font-semibold tracking-[0.45em] text-white/40 uppercase mt-2 text-center sm:text-left">Free Client · 1.8.9</span>
+            <span class="text-[0.62rem] font-semibold tracking-[0.45em] text-white/40 uppercase mt-2 text-center sm:text-left">Free Client · 1.8.9 / 1.7.10</span>
         </div>
     </div>
 
@@ -265,7 +268,7 @@
                 </div>
                 <div class="flex flex-col">
                     <span class="font-display font-bold tracking-[0.22em] text-base leading-none text-white text-glow">AZYRA</span>
-                    <span class="text-[0.58rem] font-semibold tracking-widest text-white/38 mt-1 uppercase">Free · 1.8.9</span>
+                    <span class="text-[0.58rem] font-semibold tracking-widest text-white/38 mt-1 uppercase">Free · 1.8.9 / 1.7.10</span>
                 </div>
             </div>
 
@@ -293,8 +296,8 @@
                     <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_12px_#34d399]"></div>
                     <span class="text-[0.62rem] font-semibold tracking-[0.28em] text-white/80 uppercase">Undetected · Updated Today · Always Free</span>
                 </div>
-                <h1 class="text-[clamp(3.2rem,7.5vw,6.5rem)] font-display font-bold leading-[1.05] tracking-tight mb-8 hero-gradient relative">The only choice.<br><span id="typewriter" class="text-white/50 italic font-light" style="font-family:'Inter',sans-serif;"></span></h1>
-                <p class="text-white/40 text-lg md:text-xl max-w-2xl leading-relaxed font-light mb-12">Lightweight injectable 1.8.9 client. Built for competitors, free forever.</p>
+                <h1 class="text-[clamp(3.2rem,7.5vw,6.5rem)] font-display font-bold leading-[1.05] tracking-tight mb-8 hero-gradient relative">The only choice.<br><span id="typewriter" class="text-white" style="-webkit-text-fill-color: white;"></span></h1>
+                <p class="text-white/40 text-lg md:text-xl max-w-2xl leading-relaxed font-light mb-12">Lightweight injectable 1.8.9 and 1.7.10 client. Built for competitors, free forever.</p>
                 <div class="flex flex-wrap gap-4 mb-12">
                     <button data-target="download" class="nav-trigger px-9 py-[17px] rounded-[22px] btn-white btn-base text-sm font-bold tracking-[0.14em] uppercase">Download Now</button>
                     <button data-target="modules" class="nav-trigger px-9 py-[17px] rounded-[22px] btn-ghost btn-base text-sm font-semibold tracking-[0.14em] uppercase">See Features</button>
@@ -309,7 +312,7 @@
                         <div class="text-[0.56rem] font-semibold tracking-[0.18em] uppercase text-white/32 mt-1">Modules</div>
                     </div>
                     <div class="stat-item flex-1 min-w-[110px] px-7 py-5 text-center">
-                        <div class="text-2xl font-display font-bold text-white text-glow">v2.4</div>
+                        <div class="text-2xl font-display font-bold text-white text-glow">v1.0</div>
                         <div class="text-[0.56rem] font-semibold tracking-[0.18em] uppercase text-white/32 mt-1">Latest</div>
                     </div>
                     <div class="stat-item flex-1 min-w-[110px] px-7 py-5 text-center">
@@ -328,7 +331,7 @@
                     </div>
                     <div>
                         <h3 class="text-2xl font-display font-bold mb-2 text-white text-glow">Aim Assist</h3>
-                        <p class="text-white/42 text-sm font-light">Stream-proof, Gaussian-smoothed. Ignores all anti-cheat rotation checks.</p>
+                        <p class="text-white/42 text-sm font-light">Locks onto players naturally without looking like an aimbot. Invisible on stream.</p>
                     </div>
                 </div>
                 <div class="md:col-span-4 glass-card p-9 flex flex-col justify-between group cursor-pointer module-card" data-name="Blink" data-category="Utils" style="min-height:220px;">
@@ -336,7 +339,7 @@
                     <div>
                         <div class="free-badge mb-2"><span class="w-1 h-1 rounded-full bg-emerald-400 inline-block"></span>Free</div>
                         <h3 class="text-lg font-display font-bold text-white mb-1">Blink</h3>
-                        <p class="text-white/35 text-xs leading-relaxed font-light">Choke outgoing packets and teleport from the server's perspective.</p>
+                        <p class="text-white/35 text-xs leading-relaxed font-light">Hold your packets to teleport past people.</p>
                     </div>
                 </div>
                 <div class="md:col-span-12 glass-card p-10 flex flex-col md:flex-row items-center justify-between gap-8" style="background:linear-gradient(135deg,transparent,rgba(255,255,255,.01),transparent);">
@@ -347,8 +350,10 @@
                             <p class="text-white/40 text-sm font-light">Over 1k members. Get help, share configs, stay updated on bypass status.</p>
                         </div>
                     </div>
-                    <button class="shrink-0 px-8 py-4 rounded-[18px] bg-[#5865F2] text-white font-bold uppercase tracking-widest text-xs hover:shadow-[0_0_26px_#5865F2] transition-all">Join Discord</button>
-                </div>
+                    <button onclick="window.open('https://discord.gg/xDWqTUNYPH', '_blank')"
+   class="shrink-0 px-8 py-4 rounded-[18px] bg-[#5865F2] text-white font-bold uppercase tracking-widest text-xs hover:shadow-[0_0_26px_#5865F2] transition-all">
+    Join Discord
+</button>                </div>
             </div>
         </section>
 
@@ -383,11 +388,11 @@
                 <div class="relative z-10">
                     <div class="flex justify-between items-end border-b border-white/[0.07] pb-6 mb-6">
                         <div>
-                            <h3 class="text-xl font-display font-bold text-white mb-1">Azyra Client</h3>
-                            <p class="text-white/38 text-sm font-light">soon</p>
+                            <h3 class="text-xl font-display font-bold text-white mb-1">Azyra Free Edition</h3>
+                            <p class="text-white/38 text-sm font-light">v1.0 - Windows (.exe)</p>
                         </div>
                         <div class="flex gap-2">
-                            <span class="px-3 py-1 rounded-lg bg-white/[0.07] text-[0.62rem] font-semibold text-white uppercase">1.8.9</span>
+                            <span class="px-3 py-1 rounded-lg bg-white/[0.07] text-[0.62rem] font-semibold text-white uppercase">1.8.9 / 1.7.10</span>
                             <span class="px-3 py-1 rounded-lg bg-emerald-500/[0.14] border border-emerald-500/25 text-[0.62rem] font-semibold text-emerald-400 uppercase">Free</span>
                         </div>
                     </div>
@@ -399,7 +404,7 @@
                     <p class="text-[0.62rem] text-center text-white/28 uppercase font-medium mb-6">By downloading, you agree to our <a href="#" data-target="tos" class="nav-trigger text-white/55 hover:text-white transition-colors underline cursor-pointer">Terms of Service</a>.</p>
                     <button class="w-full py-4 rounded-2xl bg-white/[0.03] border border-white/[0.04] flex items-center justify-center gap-3 opacity-30 cursor-not-allowed">
                         <i class="ph-fill ph-apple-logo text-xl"></i>
-                        <span class="text-xs font-semibold uppercase tracking-[0.14em] text-white/45">macOS / Linux &mdash; Unsupported</span>
+                        <span class="text-xs font-semibold uppercase tracking-[0.14em] text-white/45">macOS / Linux - Unsupported</span>
                     </button>
                 </div>
             </div>
@@ -435,11 +440,16 @@
                     <p>We are not responsible for server bans, IP bans, or profile wipes. You assume all risks associated with use of this software.</p>
                     <p>Do not share or redistribute builds. Violations result in an immediate HWID ban.</p>
                 </div>
-                <button data-target="download" class="nav-trigger w-full max-w-xs py-4 rounded-[22px] btn-white btn-base text-xs font-bold uppercase tracking-[0.2em]">I Agree — Download</button>
+                <button data-target="download" class="nav-trigger w-full max-w-xs py-4 rounded-[22px] btn-white btn-base text-xs font-bold uppercase tracking-[0.2em]">I Agree - Download</button>
             </div>
         </section>
 
     </main>
+
+    <!-- Website QoL: Back to Top Button -->
+    <button id="back-to-top" class="fixed bottom-6 right-6 md:bottom-10 md:right-10 z-[100] p-4 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 text-white opacity-0 pointer-events-none transition-all duration-300 hover:bg-white/15 hover:scale-105 shadow-lg">
+        <i class="ph-bold ph-arrow-up text-xl"></i>
+    </button>
 
     <script>
     // ── Crown image (Using the uploaded file directly) ───────────
@@ -452,7 +462,7 @@
     // ── App State ───────────────────────────────────────────────
     const AppState = {
         currentView: 'home',
-        words: ["Play God.", "Always Free.", "Easy Winner.", "Azyra."],
+        words: ["Dominate.", "Always Free.", "Undetected.", "Azyra."],
         wordIdx: 0, charIdx: 0, isDeleting: false,
 
         catClass: {
@@ -462,47 +472,47 @@
 
         data: {
             Combat: [
-                { name:'AimAssist',    icon:'ph-crosshair',             desc:'Smoothly tracks targets without snapping. Fully stream-proof.',                deep:'Uses custom mouse-event injection instead of rotation packets. Bypasses Watchdog/AGC rotation checks by manipulating the raw input stream. Gaussian smoothing mimics human jitter.' },
-                { name:'AutoClicker',  icon:'ph-mouse',                 desc:'Humanized CPS with natural randomization to look vanilla.',                    deep:'Emulates real patterns from 5,000+ recorded clicks. Variable delay algorithm ensures no two cycles are identical. Features Block-Hit and Inventory-Fill detection.' },
-                { name:'NoHitDelay',   icon:'ph-lightning',             desc:'Bypasses the vanilla 10-tick hit delay for faster hits.',                      deep:'Intercepts the client-side hit-delay timer. In 1.8.9 the game blocks attacking for 10 ticks after a miss/hit — we reset this counter instantly.' },
-                { name:'Reach',        icon:'ph-arrows-out',             desc:'Extends attack range up to 3.3 blocks with ping compensation.',             deep:'Modifies client-side bounding-box detection. Ping Compensation calculates server-side latency to extend the hit vector without triggering Impossible Reach flags.' },
-                { name:'Hitbox',       icon:'ph-bounding-box',          desc:'Subtly expands enemy bounding boxes for easier combos.',                       deep:'Expands Entity Hitboxes on your client. Clicks register within the expanded margin even without direct aim. Visually undetectable server-side.' },
-                { name:'Velocity',     icon:'ph-wind',                  desc:'Customize knockback taken. 0% KB makes you a literal wall.',                  deep:'Cancels or reduces S12PacketEntityVelocity. Horizontal-Only mode lets you take vertical KB while staying perfectly still horizontally.' }
+                { name:'AimAssist',    icon:'ph-crosshair',             desc:'Automatically aims at players.',                deep:'Modifies mouse movement to aim towards the nearest target.' },
+                { name:'AutoClicker',  icon:'ph-mouse',                 desc:'Automatically clicks the mouse. Uses randomized delays between clicks.',                    deep:'Simulates mouse clicks with variable delays to avoid detection.' },
+                { name:'NoHitDelay',   icon:'ph-lightning',             desc:'Removes the standard delay that occurs after missing an attack.',                      deep:'Resets the internal hit delay counter to zero immediately after an attack.' },
+                { name:'Reach',        icon:'ph-arrows-out',             desc:'Increases your attack range.',              deep:'Modifies the distance calculation for attacks.' },
+                { name:'Hitbox',       icon:'ph-bounding-box',          desc:'Expands the hit area of other players.',                        deep:'Increases the size of player bounding boxes on the client side.' },
+                { name:'Velocity',     icon:'ph-wind',                  desc:'Reduces the amount of knockback you take when hit.',                  deep:'Cancels or reduces the incoming velocity packets from the server.' }
             ],
             Visuals: [
-                { name:'ArrayList',   icon:'ph-list-bullets',       desc:'Displays active modules with theme-synced colors.',                deep:'High-performance rendering hook drawing directly onto the GUI. Zero FPS overhead even with 50+ modules active.' },
-                { name:'ESP',         icon:'ph-eye',                desc:'Draws boxes around enemies through solid blocks.',                deep:'Uses OpenGL wall-hacks to render entity outlines through terrain. Health-color scaling and distance markers. Stream-proof, hidden from OBS.' },
-                { name:'NameTags',    icon:'ph-tag',                desc:'Detailed tags showing health and armor through walls.',          deep:'Bypasses default nameplate rendering distance. Scales tag size by FOV and distance for readability in fast-paced fights.' },
-                { name:'BarrierESP',  icon:'ph-cube',               desc:'Shows barrier blocks as glowing highlights for easy nav.',      deep:'Uses block rendering hooks to highlight barrier blocks through walls. Useful for map awareness and finding hidden areas.' }
+                { name:'ArrayList',   icon:'ph-list-bullets',       desc:'Displays a list of active modules on your screen.',                deep:'Renders active modules as text on the screen.' },
+                { name:'ESP',         icon:'ph-eye',                desc:'Highlights players through blocks.',                deep:'Draws outlines around player entities using OpenGL.' },
+                { name:'NameTags',    icon:'ph-tag',                desc:'Displays player names, health, and equipment from a distance.',          deep:'Overrides the default nametag rendering to show extra information.' },
+                { name:'BarrierESP',  icon:'ph-cube',               desc:'Makes invisible barrier blocks visible.',      deep:'Forces barrier blocks to render normally.' }
             ],
             Movement: [
-                { name:'Bhop',         icon:'ph-sneaker',            desc:'Maintains sprint momentum while jumping for high-speed hopping.', deep:'Manipulates the Friction variable in the movement engine. Tick-perfect jump timing preserves 100% forward momentum without air-drag penalty.' },
-                { name:'NoJumpDelay',  icon:'ph-arrow-fat-up',       desc:'Removes the delay between jumps for faster jumping.',            deep:'Removes vanilla jump cooldown, letting you jump as fast as you click. Zero server-side detection surface.' },
-                { name:'Sprint',       icon:'ph-person-simple-run', desc:'Forces omni-sprint. Never get stuck walking again.',            deep:'Forces isSprinting = true regardless of input or hunger. Omni-Sprint allows sprinting in all directions including backwards.' },
-                { name:'Timer',        icon:'ph-clock',             desc:'Modifies game tick rate for a slight speed advantage.',         deep:'Speeds up the internal game clock. All actions — walking, falling, attacking — happen slightly faster on your screen.' },
-                { name:'KeepSprint',   icon:'ph-fast-forward',      desc:'Stops hits from slowing you down. Essential for combos.',       deep:'Hitting an enemy reduces speed by 40% for one tick. We intercept this speed-reduction packet to keep momentum constant throughout combos.' }
+                { name:'Bhop',         icon:'ph-sneaker',            desc:'Increases movement speed by jumping continuously.', deep:'Applies continuous forward momentum while jumping.' },
+                { name:'NoJumpDelay',  icon:'ph-arrow-fat-up',       desc:'Removes the cooldown between jumps.',            deep:'Sets the jump delay variable to zero.' },
+                { name:'Sprint',       icon:'ph-person-simple-run', desc:'Automatically sprints without needing to hold the sprint key.',            deep:'Forces the sprinting state to true.' },
+                { name:'Timer',        icon:'ph-clock',             desc:'Increases the overall speed of the game client.',         deep:'Modifies the client tick rate to run faster.' },
+                { name:'KeepSprint',   icon:'ph-fast-forward',      desc:'Prevents your sprint from stopping when you attack a player.',       deep:'Cancels the packet that reduces speed when attacking.' }
             ],
             Utils: [
-                { name:'Blink',      icon:'ph-wifi-slash',      desc:'Choke outgoing packets to simulate a massive lag spike.',            deep:'Buffers all outgoing C03 packets in a local queue. On deactivation, dumps them all at once — making you teleport from the server\'s perspective.' },
-                { name:'Scaffold',   icon:'ph-stack',           desc:'Auto-places blocks under you with legit rotations.',                 deep:'Automates bridging by detecting block edges and sending placement packets. Legit Rotations mode moves your head down naturally.' },
-                { name:'FastPlace',  icon:'ph-pointer',         desc:'Removes right-click delay for Godbridging and clutches.',            deep:'Resets rightClickDelayTimer to 0 every tick. Vanilla caps you at 4 blocks/second — this limit is removed entirely.' },
-                { name:'ThrowPots',  icon:'ph-flask',           desc:'Automatically throws potions when your inventory has them.',         deep:'Detects potion slots and fires use-packet automatically. Works with speed, health, and splash potions.' },
-                { name:'ThrowPearl', icon:'ph-asterisk',        desc:'Throws ender pearls instantly when selected.',                       deep:'Bypasses right-click delay for pearls, enabling faster throws and last-second clutch plays.' },
-                { name:'Refill',     icon:'ph-arrows-clockwise',desc:'Automatically refills your hotbar from inventory.',                  deep:'When a hotbar slot empties, pulls items from inventory instantly. Supports potions, blocks, and all stackable items.' },
-                { name:'AutoTool',   icon:'ph-wrench',          desc:'Auto-switches to the best tool for the block you\'re mining.',       deep:'Calculates tool efficiency against block hardness and swaps to the optimal item before each break.' }
+                { name:'Blink',      icon:'ph-wifi-slash',      desc:'Suspends your movement packets to simulate teleportation.',            deep:'Stores movement packets in a queue and sends them all at once.' },
+                { name:'Scaffold',   icon:'ph-stack',           desc:'Automatically places blocks under your feet as you walk.',                  deep:'Calculates the block edge and sends placement packets automatically.' },
+                { name:'FastPlace',  icon:'ph-cursor-click',          desc:'Removes the delay between placing blocks.',             deep:'Sets the right-click delay timer to zero.' },
+                { name:'ThrowPots',  icon:'ph-flask',           desc:'Automatically throws health potions when your health is low.',         deep:'Detects low health and sends a packet to use a health potion.' },
+                { name:'ThrowPearl', icon:'ph-asterisk',        desc:'Throws an ender pearl instantly without delay.',                        deep:'Bypasses the right-click delay specifically for ender pearls.' },
+                { name:'Refill',     icon:'ph-arrows-clockwise',desc:'Automatically moves items from your inventory to your hotbar.',                  deep:'Moves items from the inventory to empty hotbar slots.' },
+                { name:'AutoTool',   icon:'ph-wrench',          desc:'Automatically switches to the best tool for the block you are breaking.',       deep:'Calculates block hardness and selects the optimal tool from the hotbar.' }
             ],
             Misc: [
-                { name:'Config',  icon:'ph-file-text', desc:'Save and load your module configurations.',       deep:'Config system storing all settings locally for quick switching between setups.' },
-                { name:'Themes',  icon:'ph-palette',   desc:'Change the client\'s UI theme and colors.',        deep:'Customizable color schemes for GUI, arraylist, and overlays. Includes multiple preset variants.' },
-                { name:'Friends', icon:'ph-users',     desc:'Manage your friends list for team features.',       deep:'Friend system that prevents targeting allies and enables team-based module logic.' },
-                { name:'Teams',   icon:'ph-flag',      desc:'Create or join teams for coordinated play.',        deep:'Team management with color coding and communication features. Syncs with friends list.' }
+                { name:'Config',  icon:'ph-file-text', desc:'Allows you to save and load your module settings.',       deep:'Saves module states and values to a local file.' },
+                { name:'Themes',  icon:'ph-palette',   desc:'Changes the colors of the client interface.',        deep:'Modifies the visual colors of the client interface.' },
+                { name:'Friends', icon:'ph-users',     desc:'Prevents combat modules from targeting specific players.',       deep:'Checks player names against a local list before attacking.' },
+                { name:'Teams',   icon:'ph-flag',      desc:'Syncs your friends list with other users.',        deep:'Shares your friends list with other clients on the same network.' }
             ]
         },
 
         configs: [
-            { name:'Hypixel',       creator:'Official',  icon:'ph-lightning',      desc:'Watchdog-optimized settings for SkyWars and BedWars.',             deep:'Tuned for Hypixel\'s Watchdog. CPS limits, reach, and velocity set just below detection thresholds based on 2024 bypass data.' },
-            { name:'MMC',           creator:'Official',  icon:'ph-sword',          desc:'Strict values built to bypass AGC in Ranked practice.',            deep:'Aggressive but clean. Built around AGC\'s packet-analysis window. Includes timing offsets for server-specific quirks.' },
-            { name:'Classic PotPvP',creator:'Community', icon:'ph-flask',          desc:'Perfect Pot delays and Refill for classic Nodebuff.',              deep:'Community-tested. Optimized Refill delay, ThrowPots timing, and reach values for classic Nodebuff/Debuff formats.' }
+            { name:'Hypixel',        creator:'Official',  icon:'ph-lightning',      desc:'Settings configured for the Hypixel network.',             deep:'Configures modules to stay within the limits of the Watchdog anti-cheat.' },
+            { name:'MMC',            creator:'Official',  icon:'ph-sword',          desc:'Settings configured for the Minemen Club network.',             deep:'Configures modules to stay within the limits of the AGC anti-cheat.' },
+            { name:'Classic PotPvP',creator:'Community', icon:'ph-flask',          desc:'Settings configured for standard practice servers.',               deep:'Optimizes item delays for standard combat rules.' }
         ]
     };
 
@@ -719,6 +729,22 @@
         window.addEventListener('resize', () => { initBg(); updateNavSlider(); });
         setTimeout(type, 1050);
         setTimeout(updateNavSlider, 120);
+
+        // Init Back to Top QoL logic
+        const mainContent = document.getElementById('main-content');
+        const bttBtn = document.getElementById('back-to-top');
+        if (mainContent && bttBtn) {
+            mainContent.addEventListener('scroll', () => {
+                if (mainContent.scrollTop > 350) {
+                    bttBtn.classList.remove('opacity-0', 'pointer-events-none');
+                } else {
+                    bttBtn.classList.add('opacity-0', 'pointer-events-none');
+                }
+            });
+            bttBtn.addEventListener('click', () => {
+                mainContent.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        }
     }
 
     document.readyState === 'loading'
