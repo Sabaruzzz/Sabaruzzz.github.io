@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AZYRA | Free Client</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bg: '#000000',
+                    },
+                    fontFamily: {
+                        display: ['Rajdhani', 'sans-serif'],
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* ── Intro ─────────────────────────────── */
+        #intro-screen { transition: opacity .5s cubic-bezier(.4,0,.2,1), visibility .5s; cursor: pointer; }
+        #intro-screen.hide-intro { opacity: 0; visibility: hidden; pointer-events: none; }
+
+        .crown-drop {
+            animation: crownDrop .95s cubic-bezier(.22,1,.36,1) forwards;
+            filter: drop-shadow(0 0 22px rgba(255,255,255,.75));
+        }
+        @keyframes crownDrop {
+            0%   { transform: translateY(-50px) scale(.65); opacity: 0; }
+            55%  { transform: translateY(7px) scale(1.06); opacity: 1; }
+            100% { transform: translateY(0) scale(1); opacity: 1; }
+        }
+        .intro-text { opacity: 0; animation: fadeUp .55s ease forwards .55s; }
+        @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+        /* ── Ambient bg & Effects ──────────────── */
+        .liquid-bg { position:fixed; inset:0; z-index:-2; background:#000; overflow:hidden; }
+        .liquid-blob { position:absolute; border-radius:50%; filter:blur(140px); opacity:.11;
+            background:radial-gradient(circle,#fff 0%,transparent 60%);
+            animation:drift 28s infinite alternate ease-in-out; }
+        .blob-1 { top:-20%; left:-10%; width:60vw; height:60vw; }
+        .blob-2 { bottom:-20%; right:-10%; width:70vw; height:70vw; animation-delay:-7s; }
+        .blob-3 { top:30%; left:40%; width:40vw; height:40vw; opacity:.05; animation-delay:-15s; }
+        @keyframes drift { from{transform:translate(0,0) scale(1);} to{transform:translate(8%,12%) scale(1.15);} }
+
+        #mouse-glow {
+            position: fixed;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 60%);
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+            transition: opacity 0.5s ease;
+            opacity: 0;
+            will-change: transform;
+        }
+
+        /* ── Glass ──────────────────────────────── */
+        .liquid-glass {
+            background:rgba(255,255,255,.012);
+            backdrop-filter:blur(40px); -webkit-backdrop-filter:blur(40px);
+            border:1px solid rgba(255,255,255,.075);
+            box-shadow:0 40px 100px -20px rgba(0,0,0,.9), inset 0 1px 1px rgba(255,255,255,.055);
+        }
+
+        /* ── Nav ────────────────────────────────── */
+        .nav-link { transition:all .3s cubic-bezier(.16,1,.3,1); outline:1px solid transparent; outline-offset:-1px; }
+        .nav-link:hover:not(.active) { outline:1px solid rgba(255,255,255,.28); background:rgba(255,255,255,.03); color:#fff; }
+        .nav-slider-anim { transition:transform .45s cubic-bezier(.16,1,.3,1), height .45s cubic-bezier(.16,1,.3,1), opacity .3s ease; }
+        .nav-link.active { color:#000; outline:none !important; }
+        .nav-link { color:rgba(255,255,255,.38); }
+
+        /* ── Cards ──────────────────────────────── */
+        .glass-card {
+            background:rgba(255,255,255,.018);
+            border:1px solid rgba(255,255,255,.06);
+            border-radius:28px;
+            transition:transform .4s cubic-bezier(.16,1,.3,1), box-shadow .4s cubic-bezier(.16,1,.3,1), background-color .4s, border-color .4s;
+            position:relative; overflow:hidden; transform:translateZ(0);
+        }
+        .glass-card:hover {
+            background:rgba(255,255,255,.045);
+            border-color:rgba(255,255,255,.3);
+            transform:translateY(-5px);
+            box-shadow:0 28px 56px -12px rgba(0,0,0,.8), 0 0 30px -8px rgba(255,255,255,.07);
+        }
+
+        /* ── Module icon wrapper ─────────────────── */
+        .mod-icon {
+            width:52px; height:52px; border-radius:18px; flex-shrink:0;
+            display:flex; align-items:center; justify-content:center;
+            border:1px solid rgba(255,255,255,.1);
+            transition:all .3s ease;
+            position:relative; overflow:hidden;
+        }
+        .mod-icon::before {
+            content:''; position:absolute; inset:0;
+            background:inherit; filter:blur(0); transition:filter .3s;
+        }
+        .glass-card:hover .mod-icon { border-color:rgba(255,255,255,.5); }
+
+        /* Category color accents */
+        .mod-icon.combat   { background:rgba(255,80,80,.08);  box-shadow:inset 0 0 20px rgba(255,80,80,.06); }
+        .mod-icon.visuals  { background:rgba(100,180,255,.08); box-shadow:inset 0 0 20px rgba(100,180,255,.06); }
+        .mod-icon.movement { background:rgba(80,255,160,.08); box-shadow:inset 0 0 20px rgba(80,255,160,.06); }
+        .mod-icon.utils    { background:rgba(255,200,60,.08);  box-shadow:inset 0 0 20px rgba(255,200,60,.06); }
+        .mod-icon.misc     { background:rgba(200,140,255,.08); box-shadow:inset 0 0 20px rgba(200,140,255,.06); }
+        .mod-icon.configs  { background:rgba(255,255,255,.06); box-shadow:inset 0 0 20px rgba(255,255,255,.04); }
+
+        .glass-card:hover .mod-icon.combat   { background:rgba(255,80,80,.18);  box-shadow:0 0 18px rgba(255,80,80,.2); }
+        .glass-card:hover .mod-icon.visuals  { background:rgba(100,180,255,.18); box-shadow:0 0 18px rgba(100,180,255,.2); }
+        .glass-card:hover .mod-icon.movement { background:rgba(80,255,160,.18); box-shadow:0 0 18px rgba(80,255,160,.2); }
+        .glass-card:hover .mod-icon.utils    { background:rgba(255,200,60,.18);  box-shadow:0 0 18px rgba(255,200,60,.2); }
+        .glass-card:hover .mod-icon.misc     { background:rgba(200,140,255,.18); box-shadow:0 0 18px rgba(200,140,255,.2); }
+        .glass-card:hover .mod-icon.configs  { background:rgba(255,255,255,.12); }
+
+        .mod-icon i { font-size:24px; transition:transform .3s ease; }
+        .glass-card:hover .mod-icon i { transform:scale(1.15); }
+
+        .mod-icon.combat   i { color:rgba(255,130,130,1); }
+        .mod-icon.visuals  i { color:rgba(130,200,255,1); }
+        .mod-icon.movement i { color:rgba(100,255,170,1); }
+        .mod-icon.utils    i { color:rgba(255,210,80,1);  }
+        .mod-icon.misc     i { color:rgba(210,160,255,1); }
+        .mod-icon.configs  i { color:rgba(220,220,220,1); }
+
+        /* Category section header accent */
+        .cat-dot.combat   { background:rgba(255,100,100,1); box-shadow:0 0 8px rgba(255,100,100,.6); }
+        .cat-dot.visuals  { background:rgba(100,180,255,1); box-shadow:0 0 8px rgba(100,180,255,.6); }
+        .cat-dot.movement { background:rgba(80,255,160,1);  box-shadow:0 0 8px rgba(80,255,160,.6); }
+        .cat-dot.utils    { background:rgba(255,200,60,1);  box-shadow:0 0 8px rgba(255,200,60,.6); }
+        .cat-dot.misc     { background:rgba(200,140,255,1); box-shadow:0 0 8px rgba(200,140,255,.6); }
+        .cat-dot.configs  { background:rgba(200,200,200,1); }
+
+        /* ── Text ───────────────────────────────── */
+        .text-glow { text-shadow:0 0 30px rgba(255,255,255,.22); }
+        .text-glow-intense { text-shadow:0 0 20px rgba(255,255,255,.45), 0 0 60px rgba(255,255,255,.12); }
+
+        /* ── Buttons ────────────────────────────── */
+        .btn-base { transition:all .35s cubic-bezier(.16,1,.3,1); cursor:pointer; transform:translateZ(0); }
+        .btn-white { background:#fff; color:#000; box-shadow:0 0 15px rgba(255,255,255,.1); }
+        .btn-white:hover { transform:scale(1.03); box-shadow:0 0 40px rgba(255,255,255,.3); }
+        .btn-ghost { background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); color:#fff; }
+        .btn-ghost:hover { background:rgba(255,255,255,.1); transform:scale(1.03); outline:1px solid rgba(255,255,255,.55); }
+
+        /* ── Section transitions ─────────────────── */
+        .view-section { display:none; opacity:0; }
+        .view-section.active { display:block; animation:viewEnter .5s cubic-bezier(.2,.8,.2,1) forwards; }
+        @keyframes viewEnter { from{opacity:0;transform:translateY(12px);} to{opacity:1;transform:translateY(0);} }
+
+        /* ── Modal ──────────────────────────────── */
+        #module-modal { visibility:hidden; opacity:0; transition:all .4s cubic-bezier(.16,1,.3,1); }
+        #module-modal.active { visibility:visible; opacity:1; }
+        .modal-content { transform:scale(.9) translateY(20px); transition:all .4s cubic-bezier(.16,1,.3,1); }
+        #module-modal.active .modal-content { transform:scale(1) translateY(0); }
+
+        /* ── Misc ───────────────────────────────── */
+        #typewriter { display:inline-block; min-height:1.1em; white-space:nowrap; }
+        .hero-gradient { background:linear-gradient(135deg,#fff 0%,rgba(255,255,255,.6) 70%,rgba(255,255,255,.3) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+        .stat-item { border-right:1px solid rgba(255,255,255,.07); }
+        .stat-item:last-child { border-right:none; }
+        .free-badge { display:inline-flex; align-items:center; gap:6px; padding:3px 10px; border-radius:999px; background:rgba(16,185,129,.12); border:1px solid rgba(16,185,129,.28); font-size:.58rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:#34d399; }
+
+        /* Crown image - using the uploaded image with blend modes to cut out black bg */
+        .crown-img { display:block; transition: filter 0.3s ease; mix-blend-mode: screen; }
+        /* When inside white bg (sidebar icon hover), invert to make it black and switch blend mode to drop the white */
+        .sidebar-logo-btn:hover .crown-img { filter: invert(1); mix-blend-mode: multiply; }
+
+        input::placeholder { color:rgba(255,255,255,.2); }
+        ::-webkit-scrollbar { width:0px; }
+
+        body::before { content:''; position:fixed; inset:0;
+            background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+            background-size:200px 200px; pointer-events:none; z-index:-1; opacity:.35; }
+    </style>
+</head>
+<body class="antialiased h-screen flex relative selection:bg-white selection:text-black">
+
+    <div id="mouse-glow"></div>
+
+    <!-- ── Intro ─────────────────────────────────────────────── -->
+    <div id="intro-screen" class="fixed inset-0 z-[9999] bg-black flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-10">
+        <div class="crown-drop">
+            <img class="crown-img w-28 h-auto sm:w-40" src="" alt="Azyra Crown" id="intro-crown">
+        </div>
+        <div class="intro-text flex flex-col">
+            <h1 class="text-6xl sm:text-8xl font-display font-bold tracking-[0.18em] text-white text-glow-intense leading-none">AZYRA</h1>
+            <span class="text-[0.62rem] font-semibold tracking-[0.45em] text-white/40 uppercase mt-2 text-center sm:text-left">Free Client · 1.8.9</span>
+        </div>
+    </div>
+
+    <div class="liquid-bg"><div class="liquid-blob blob-1"></div><div class="liquid-blob blob-2"></div><div class="liquid-blob blob-3"></div></div>
+    <canvas id="bg-canvas" class="fixed inset-0 pointer-events-none z-[-2] opacity-25"></canvas>
+
+    <!-- ── Module Modal ────────────────────────────────────────── -->
+    <div id="module-modal" class="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/70 backdrop-blur-md">
+        <div class="modal-content w-full max-w-2xl liquid-glass rounded-[36px] p-8 md:p-12 relative overflow-hidden">
+            <button id="close-modal" class="absolute top-8 right-8 text-white/30 hover:text-white transition-colors">
+                <i class="ph ph-x text-2xl"></i>
+            </button>
+            <div class="flex items-center gap-5 mb-8">
+                <div id="modal-icon-wrap" class="mod-icon w-16 h-16 rounded-2xl">
+                    <i id="modal-icon" class="ph-fill text-3xl"></i>
+                </div>
+                <div>
+                    <div class="free-badge mb-2"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>Free</div>
+                    <h2 id="modal-title" class="text-3xl font-display font-bold text-white text-glow tracking-wide uppercase">Module</h2>
+                </div>
+            </div>
+            <div class="space-y-5">
+                <div>
+                    <h4 class="text-[0.6rem] font-bold uppercase tracking-[0.3em] text-white/25 mb-3">Overview</h4>
+                    <p id="modal-desc" class="text-white/75 leading-relaxed text-base"></p>
+                </div>
+                <div class="h-px bg-white/[0.07] w-full"></div>
+                <div>
+                    <h4 class="text-[0.6rem] font-bold uppercase tracking-[0.3em] text-white/25 mb-3">Technical Breakdown</h4>
+                    <p id="modal-deep-dive" class="text-white/45 leading-relaxed text-sm"></p>
+                </div>
+            </div>
+            <div class="mt-8">
+                <button id="modal-action-btn" data-target="download" class="nav-trigger w-full py-4 rounded-2xl btn-white btn-base text-xs font-bold uppercase tracking-[0.2em]">Download Free</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Mobile Header ──────────────────────────────────────── -->
+    <div class="md:hidden fixed top-0 left-0 w-full h-16 px-5 flex items-center justify-between z-[100] bg-black/50 backdrop-blur-xl border-b border-white/[0.07]">
+        <div class="flex items-center gap-3">
+            <img class="crown-img w-8 h-auto" src="" alt="Azyra" id="mobile-header-crown">
+            <span class="font-display font-bold tracking-[0.22em] text-base text-white text-glow">AZYRA</span>
+        </div>
+        <button id="mobile-menu-btn" class="p-2 text-white/60 hover:text-white transition-colors">
+            <i class="ph ph-list text-2xl"></i>
+        </button>
+    </div>
+
+    <div id="mobile-overlay" class="fixed inset-0 bg-black/90 backdrop-blur-md z-40 hidden md:hidden"></div>
+
+    <!-- ── Sidebar ────────────────────────────────────────────── -->
+    <aside id="sidebar" class="fixed top-0 bottom-0 left-0 w-64 p-5 z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-500 flex flex-col">
+        <div class="liquid-glass h-full rounded-[44px] flex flex-col shadow-2xl p-4">
+            
+            <div class="h-20 flex items-center gap-4 px-5 shrink-0 nav-trigger cursor-pointer group sidebar-logo-btn" data-target="home">
+                <div class="w-10 h-10 rounded-2xl bg-white/[0.07] border border-white/10 flex items-center justify-center overflow-hidden group-hover:bg-white transition-all duration-300">
+                    <img class="crown-img w-7 h-auto" src="" alt="Azyra" id="sidebar-crown">
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-display font-bold tracking-[0.22em] text-base leading-none text-white text-glow">AZYRA</span>
+                    <span class="text-[0.58rem] font-semibold tracking-widest text-white/38 mt-1 uppercase">Free · 1.8.9</span>
+                </div>
+            </div>
+
+            <nav class="flex-1 px-2 py-5 space-y-1.5 overflow-y-auto relative">
+                <div id="nav-slider" class="absolute left-2 right-2 top-0 bg-white rounded-xl shadow-[0_0_20px_rgba(255,255,255,.22)] pointer-events-none z-0 opacity-0 nav-slider-anim"></div>
+                <div class="text-[0.56rem] font-bold tracking-[0.32em] uppercase text-white/25 px-4 mb-4 relative z-10">Menu</div>
+                <button data-target="home" class="nav-trigger nav-link w-full flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium tracking-wide active relative z-10"><i class="ph ph-squares-four text-lg"></i> Home</button>
+                <button data-target="modules" class="nav-trigger nav-link w-full flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium tracking-wide relative z-10"><i class="ph ph-sword text-lg"></i> Features</button>
+                <button data-target="configs" class="nav-trigger nav-link w-full flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium tracking-wide relative z-10"><i class="ph ph-sliders-horizontal text-lg"></i> Configs</button>
+                <div class="h-px bg-white/[0.07] mx-4 my-5 relative z-10"></div>
+                <div class="text-[0.56rem] font-bold tracking-[0.32em] uppercase text-white/25 px-4 mb-4 relative z-10">Get it</div>
+                <button data-target="download" class="nav-trigger nav-link w-full flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-medium tracking-wide relative z-10"><i class="ph ph-download-simple text-lg"></i> Download</button>
+            </nav>
+
+            <button data-target="download" class="nav-trigger w-full py-4 rounded-[24px] btn-white btn-base text-xs font-bold uppercase tracking-[0.2em] mb-2">Download Free</button>
+        </div>
+    </aside>
+
+    <main class="flex-1 h-full w-full overflow-y-auto relative md:pl-64 pt-24 md:pt-0" id="main-content">
+
+        <!-- ── HOME ──────────────────────────────────────────── -->
+        <section id="home" class="view-section active max-w-[1080px] mx-auto p-6 md:p-12 xl:p-16">
+            <div class="mb-20 mt-8">
+                <div class="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/[0.14] mb-8 backdrop-blur-md hover:bg-white/10 transition-colors cursor-default">
+                    <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_12px_#34d399]"></div>
+                    <span class="text-[0.62rem] font-semibold tracking-[0.28em] text-white/80 uppercase">Undetected · Updated Today · Always Free</span>
+                </div>
+                <h1 class="text-[clamp(3.2rem,7.5vw,6.5rem)] font-display font-bold leading-[1.05] tracking-tight mb-8 hero-gradient relative">The only choice.<br><span id="typewriter" class="text-white/50 italic font-light" style="font-family:'Inter',sans-serif;"></span></h1>
+                <p class="text-white/40 text-lg md:text-xl max-w-2xl leading-relaxed font-light mb-12">Lightweight injectable 1.8.9 client. Built for competitors, free forever.</p>
+                <div class="flex flex-wrap gap-4 mb-12">
+                    <button data-target="download" class="nav-trigger px-9 py-[17px] rounded-[22px] btn-white btn-base text-sm font-bold tracking-[0.14em] uppercase">Download Now</button>
+                    <button data-target="modules" class="nav-trigger px-9 py-[17px] rounded-[22px] btn-ghost btn-base text-sm font-semibold tracking-[0.14em] uppercase">See Features</button>
+                </div>
+                <div class="flex flex-wrap bg-white/[0.02] border border-white/[0.06] rounded-2xl overflow-hidden">
+                    <div class="stat-item flex-1 min-w-[110px] px-7 py-5 text-center">
+                        <div class="text-2xl font-display font-bold text-white text-glow">1,000+</div>
+                        <div class="text-[0.56rem] font-semibold tracking-[0.18em] uppercase text-white/32 mt-1">Members</div>
+                    </div>
+                    <div class="stat-item flex-1 min-w-[110px] px-7 py-5 text-center">
+                        <div class="text-2xl font-display font-bold text-white text-glow">30+</div>
+                        <div class="text-[0.56rem] font-semibold tracking-[0.18em] uppercase text-white/32 mt-1">Modules</div>
+                    </div>
+                    <div class="stat-item flex-1 min-w-[110px] px-7 py-5 text-center">
+                        <div class="text-2xl font-display font-bold text-white text-glow">v2.4</div>
+                        <div class="text-[0.56rem] font-semibold tracking-[0.18em] uppercase text-white/32 mt-1">Latest</div>
+                    </div>
+                    <div class="stat-item flex-1 min-w-[110px] px-7 py-5 text-center">
+                        <div class="text-2xl font-display font-bold text-white text-glow">$0</div>
+                        <div class="text-[0.56rem] font-semibold tracking-[0.18em] uppercase text-white/32 mt-1">Forever</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-5 pb-32">
+                <!-- Featured card -->
+                <div class="md:col-span-8 glass-card p-9 flex flex-col justify-between group cursor-pointer module-card" data-name="AimAssist" data-category="Combat" style="min-height:220px;">
+                    <div class="flex items-start justify-between">
+                        <div class="mod-icon combat"><i class="ph-bold ph-crosshair"></i></div>
+                        <div class="free-badge"><span class="w-1 h-1 rounded-full bg-emerald-400 inline-block"></span>Free</div>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-display font-bold mb-2 text-white text-glow">Aim Assist</h3>
+                        <p class="text-white/42 text-sm font-light">Stream-proof, Gaussian-smoothed. Ignores all anti-cheat rotation checks.</p>
+                    </div>
+                </div>
+                <div class="md:col-span-4 glass-card p-9 flex flex-col justify-between group cursor-pointer module-card" data-name="Blink" data-category="Utils" style="min-height:220px;">
+                    <div class="mod-icon utils"><i class="ph-bold ph-wifi-slash"></i></div>
+                    <div>
+                        <div class="free-badge mb-2"><span class="w-1 h-1 rounded-full bg-emerald-400 inline-block"></span>Free</div>
+                        <h3 class="text-lg font-display font-bold text-white mb-1">Blink</h3>
+                        <p class="text-white/35 text-xs leading-relaxed font-light">Choke outgoing packets and teleport from the server's perspective.</p>
+                    </div>
+                </div>
+                <div class="md:col-span-12 glass-card p-10 flex flex-col md:flex-row items-center justify-between gap-8" style="background:linear-gradient(135deg,transparent,rgba(255,255,255,.01),transparent);">
+                    <div class="flex items-center gap-6">
+                        <img class="crown-img w-14 h-auto opacity-80" src="" alt="" id="home-crown">
+                        <div>
+                            <h3 class="text-2xl font-display font-bold text-white mb-1 italic text-glow">Join the Community</h3>
+                            <p class="text-white/40 text-sm font-light">Over 1k members. Get help, share configs, stay updated on bypass status.</p>
+                        </div>
+                    </div>
+                    <button class="shrink-0 px-8 py-4 rounded-[18px] bg-[#5865F2] text-white font-bold uppercase tracking-widest text-xs hover:shadow-[0_0_26px_#5865F2] transition-all">Join Discord</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── FEATURES ───────────────────────────────────────── -->
+        <section id="modules" class="view-section p-6 md:p-12 xl:p-16 max-w-[1080px] mx-auto">
+            <div class="mb-14 border-b border-white/[0.07] pb-10">
+                <div class="free-badge mb-4"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>All modules are free</div>
+                <h2 class="text-4xl md:text-5xl font-display font-bold tracking-tight mb-3 text-white uppercase italic text-glow-intense">Features.</h2>
+                <p class="text-white/45 text-base font-light">Strictly curated tools. Click any card for a technical deep dive.</p>
+            </div>
+            <div id="modules-container" class="space-y-12 pb-40"></div>
+        </section>
+
+        <!-- ── CONFIGS ────────────────────────────────────────── -->
+        <section id="configs" class="view-section p-6 md:p-12 xl:p-16 max-w-[1080px] mx-auto">
+            <div class="mb-14 border-b border-white/[0.07] pb-10">
+                <div class="free-badge mb-4"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>Community configs</div>
+                <h2 class="text-4xl md:text-5xl font-display font-bold tracking-tight mb-3 text-white uppercase italic text-glow-intense">Configs.</h2>
+                <p class="text-white/45 text-base font-light">Tested settings for top servers.</p>
+            </div>
+            <div id="configs-container" class="pb-40"></div>
+        </section>
+
+        <!-- ── DOWNLOAD ───────────────────────────────────────── -->
+        <section id="download" class="view-section p-6 md:p-12 xl:p-16 max-w-3xl mx-auto mt-10">
+            <div class="text-center mb-12">
+                <img class="crown-img w-20 h-auto mx-auto mb-6" src="" alt="Azyra" id="download-crown" style="filter:drop-shadow(0 0 20px rgba(255,255,255,.6));">
+                <h2 class="text-4xl md:text-5xl font-display font-bold text-white uppercase italic text-glow-intense mb-2">Download.</h2>
+                <p class="text-white/30 text-sm font-light">Free, always. No accounts, no subscriptions.</p>
+            </div>
+            <div class="glass-card p-10 md:p-14 flex flex-col gap-8 relative overflow-hidden border-white/[0.09]">
+                <div class="relative z-10">
+                    <div class="flex justify-between items-end border-b border-white/[0.07] pb-6 mb-6">
+                        <div>
+                            <h3 class="text-xl font-display font-bold text-white mb-1">Azyra Free Edition</h3>
+                            <p class="text-white/38 text-sm font-light">v2.4.1 &mdash; Windows (.exe)</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <span class="px-3 py-1 rounded-lg bg-white/[0.07] text-[0.62rem] font-semibold text-white uppercase">1.8.9</span>
+                            <span class="px-3 py-1 rounded-lg bg-emerald-500/[0.14] border border-emerald-500/25 text-[0.62rem] font-semibold text-emerald-400 uppercase">Free</span>
+                        </div>
+                    </div>
+                    <!-- CHANGED FROM <button> TO <a> TAG RIGHT HERE! -->
+                    <a href="Aryza.zip" download="Aryza.zip" class="w-full py-5 rounded-2xl btn-white btn-base flex items-center justify-center gap-3 mb-4" style="text-decoration: none;">
+                        <i class="ph-fill ph-windows-logo text-xl"></i>
+                        <span class="text-sm font-bold uppercase tracking-[0.15em]">Download for Windows</span>
+                    </a>
+                    <p class="text-[0.62rem] text-center text-white/28 uppercase font-medium mb-6">By downloading, you agree to our <a href="#" data-target="tos" class="nav-trigger text-white/55 hover:text-white transition-colors underline cursor-pointer">Terms of Service</a>.</p>
+                    <button class="w-full py-4 rounded-2xl bg-white/[0.03] border border-white/[0.04] flex items-center justify-center gap-3 opacity-30 cursor-not-allowed">
+                        <i class="ph-fill ph-apple-logo text-xl"></i>
+                        <span class="text-xs font-semibold uppercase tracking-[0.14em] text-white/45">macOS / Linux &mdash; Unsupported</span>
+                    </button>
+                </div>
+            </div>
+            <div class="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 pb-32">
+                <div class="glass-card p-6 text-center">
+                    <i class="ph-bold ph-shield-check text-2xl text-white/55 mb-3 block"></i>
+                    <div class="text-xs font-semibold text-white/65 uppercase tracking-wider mb-1">Undetected</div>
+                    <div class="text-[0.65rem] text-white/28 font-light">Updated for latest Watchdog & AGC</div>
+                </div>
+                <div class="glass-card p-6 text-center">
+                    <i class="ph-bold ph-eye-slash text-2xl text-white/55 mb-3 block"></i>
+                    <div class="text-xs font-semibold text-white/65 uppercase tracking-wider mb-1">Stream Safe</div>
+                    <div class="text-[0.65rem] text-white/28 font-light">Hidden from OBS & screen capture</div>
+                </div>
+                <div class="glass-card p-6 text-center">
+                    <i class="ph-bold ph-infinity text-2xl text-white/55 mb-3 block"></i>
+                    <div class="text-xs font-semibold text-white/65 uppercase tracking-wider mb-1">Free Forever</div>
+                    <div class="text-[0.65rem] text-white/28 font-light">No subscriptions, no hidden costs</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── TOS ────────────────────────────────────────────── -->
+        <section id="tos" class="view-section p-6 md:p-12 xl:p-16 max-w-3xl mx-auto mt-10">
+            <div class="glass-card p-10 md:p-14 flex flex-col items-center text-center border-white/[0.09]">
+                <div class="w-14 h-14 rounded-2xl bg-white/[0.04] border border-white/[0.07] flex items-center justify-center mb-8">
+                    <i class="ph-bold ph-scroll text-2xl text-white/65"></i>
+                </div>
+                <h2 class="text-4xl font-display font-bold text-white uppercase italic text-glow-intense mb-4">Terms of Service.</h2>
+                <div class="w-16 h-0.5 bg-white/18 mx-auto rounded-full mb-10"></div>
+                <div class="text-white/52 text-sm md:text-base leading-relaxed font-light max-w-xl space-y-5 mb-12">
+                    <p>By using Azyra, you agree not to distribute the client, crack our loaders, or reverse engineer our bypasses.</p>
+                    <p>We are not responsible for server bans, IP bans, or profile wipes. You assume all risks associated with use of this software.</p>
+                    <p>Do not share or redistribute builds. Violations result in an immediate HWID ban.</p>
+                </div>
+                <button data-target="download" class="nav-trigger w-full max-w-xs py-4 rounded-[22px] btn-white btn-base text-xs font-bold uppercase tracking-[0.2em]">I Agree — Download</button>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+    // ── Crown image (Using the uploaded file directly) ───────────
+    const CROWN_SRC = "azyra_1.png"; // Make sure azyra_1.png is in the same folder!
+    
+    function initCrowns() {
+        document.querySelectorAll('.crown-img').forEach(img => img.src = CROWN_SRC);
+    }
+
+    // ── App State ───────────────────────────────────────────────
+    const AppState = {
+        currentView: 'home',
+        words: ["Play God.", "Always Free.", "Easy Winner.", "Azyra."],
+        wordIdx: 0, charIdx: 0, isDeleting: false,
+
+        catClass: {
+            Combat: 'combat', Visuals: 'visuals', Movement: 'movement',
+            Utils: 'utils', Misc: 'misc', Configs: 'configs'
+        },
+
+        data: {
+            Combat: [
+                { name:'AimAssist',    icon:'ph-crosshair',             desc:'Smoothly tracks targets without snapping. Fully stream-proof.',                deep:'Uses custom mouse-event injection instead of rotation packets. Bypasses Watchdog/AGC rotation checks by manipulating the raw input stream. Gaussian smoothing mimics human jitter.' },
+                { name:'AutoClicker',  icon:'ph-mouse',                 desc:'Humanized CPS with natural randomization to look vanilla.',                    deep:'Emulates real patterns from 5,000+ recorded clicks. Variable delay algorithm ensures no two cycles are identical. Features Block-Hit and Inventory-Fill detection.' },
+                { name:'NoHitDelay',   icon:'ph-lightning',             desc:'Bypasses the vanilla 10-tick hit delay for faster hits.',                      deep:'Intercepts the client-side hit-delay timer. In 1.8.9 the game blocks attacking for 10 ticks after a miss/hit — we reset this counter instantly.' },
+                { name:'Reach',        icon:'ph-arrows-out',             desc:'Extends attack range up to 3.3 blocks with ping compensation.',             deep:'Modifies client-side bounding-box detection. Ping Compensation calculates server-side latency to extend the hit vector without triggering Impossible Reach flags.' },
+                { name:'Hitbox',       icon:'ph-bounding-box',          desc:'Subtly expands enemy bounding boxes for easier combos.',                       deep:'Expands Entity Hitboxes on your client. Clicks register within the expanded margin even without direct aim. Visually undetectable server-side.' },
+                { name:'Velocity',     icon:'ph-wind',                  desc:'Customize knockback taken. 0% KB makes you a literal wall.',                  deep:'Cancels or reduces S12PacketEntityVelocity. Horizontal-Only mode lets you take vertical KB while staying perfectly still horizontally.' }
+            ],
+            Visuals: [
+                { name:'ArrayList',   icon:'ph-list-bullets',       desc:'Displays active modules with theme-synced colors.',                deep:'High-performance rendering hook drawing directly onto the GUI. Zero FPS overhead even with 50+ modules active.' },
+                { name:'ESP',         icon:'ph-eye',                desc:'Draws boxes around enemies through solid blocks.',                deep:'Uses OpenGL wall-hacks to render entity outlines through terrain. Health-color scaling and distance markers. Stream-proof, hidden from OBS.' },
+                { name:'NameTags',    icon:'ph-tag',                desc:'Detailed tags showing health and armor through walls.',          deep:'Bypasses default nameplate rendering distance. Scales tag size by FOV and distance for readability in fast-paced fights.' },
+                { name:'BarrierESP',  icon:'ph-cube',               desc:'Shows barrier blocks as glowing highlights for easy nav.',      deep:'Uses block rendering hooks to highlight barrier blocks through walls. Useful for map awareness and finding hidden areas.' }
+            ],
+            Movement: [
+                { name:'Bhop',         icon:'ph-sneaker',            desc:'Maintains sprint momentum while jumping for high-speed hopping.', deep:'Manipulates the Friction variable in the movement engine. Tick-perfect jump timing preserves 100% forward momentum without air-drag penalty.' },
+                { name:'NoJumpDelay',  icon:'ph-arrow-fat-up',       desc:'Removes the delay between jumps for faster jumping.',            deep:'Removes vanilla jump cooldown, letting you jump as fast as you click. Zero server-side detection surface.' },
+                { name:'Sprint',       icon:'ph-person-simple-run', desc:'Forces omni-sprint. Never get stuck walking again.',            deep:'Forces isSprinting = true regardless of input or hunger. Omni-Sprint allows sprinting in all directions including backwards.' },
+                { name:'Timer',        icon:'ph-clock',             desc:'Modifies game tick rate for a slight speed advantage.',         deep:'Speeds up the internal game clock. All actions — walking, falling, attacking — happen slightly faster on your screen.' },
+                { name:'KeepSprint',   icon:'ph-fast-forward',      desc:'Stops hits from slowing you down. Essential for combos.',       deep:'Hitting an enemy reduces speed by 40% for one tick. We intercept this speed-reduction packet to keep momentum constant throughout combos.' }
+            ],
+            Utils: [
+                { name:'Blink',      icon:'ph-wifi-slash',      desc:'Choke outgoing packets to simulate a massive lag spike.',            deep:'Buffers all outgoing C03 packets in a local queue. On deactivation, dumps them all at once — making you teleport from the server\'s perspective.' },
+                { name:'Scaffold',   icon:'ph-stack',           desc:'Auto-places blocks under you with legit rotations.',                 deep:'Automates bridging by detecting block edges and sending placement packets. Legit Rotations mode moves your head down naturally.' },
+                { name:'FastPlace',  icon:'ph-pointer',         desc:'Removes right-click delay for Godbridging and clutches.',            deep:'Resets rightClickDelayTimer to 0 every tick. Vanilla caps you at 4 blocks/second — this limit is removed entirely.' },
+                { name:'ThrowPots',  icon:'ph-flask',           desc:'Automatically throws potions when your inventory has them.',         deep:'Detects potion slots and fires use-packet automatically. Works with speed, health, and splash potions.' },
+                { name:'ThrowPearl', icon:'ph-asterisk',        desc:'Throws ender pearls instantly when selected.',                       deep:'Bypasses right-click delay for pearls, enabling faster throws and last-second clutch plays.' },
+                { name:'Refill',     icon:'ph-arrows-clockwise',desc:'Automatically refills your hotbar from inventory.',                  deep:'When a hotbar slot empties, pulls items from inventory instantly. Supports potions, blocks, and all stackable items.' },
+                { name:'AutoTool',   icon:'ph-wrench',          desc:'Auto-switches to the best tool for the block you\'re mining.',       deep:'Calculates tool efficiency against block hardness and swaps to the optimal item before each break.' }
+            ],
+            Misc: [
+                { name:'Config',  icon:'ph-file-text', desc:'Save and load your module configurations.',       deep:'Config system storing all settings locally for quick switching between setups.' },
+                { name:'Themes',  icon:'ph-palette',   desc:'Change the client\'s UI theme and colors.',        deep:'Customizable color schemes for GUI, arraylist, and overlays. Includes multiple preset variants.' },
+                { name:'Friends', icon:'ph-users',     desc:'Manage your friends list for team features.',       deep:'Friend system that prevents targeting allies and enables team-based module logic.' },
+                { name:'Teams',   icon:'ph-flag',      desc:'Create or join teams for coordinated play.',        deep:'Team management with color coding and communication features. Syncs with friends list.' }
+            ]
+        },
+
+        configs: [
+            { name:'Hypixel',       creator:'Official',  icon:'ph-lightning',      desc:'Watchdog-optimized settings for SkyWars and BedWars.',             deep:'Tuned for Hypixel\'s Watchdog. CPS limits, reach, and velocity set just below detection thresholds based on 2024 bypass data.' },
+            { name:'MMC',           creator:'Official',  icon:'ph-sword',          desc:'Strict values built to bypass AGC in Ranked practice.',            deep:'Aggressive but clean. Built around AGC\'s packet-analysis window. Includes timing offsets for server-specific quirks.' },
+            { name:'Classic PotPvP',creator:'Community', icon:'ph-flask',          desc:'Perfect Pot delays and Refill for classic Nodebuff.',              deep:'Community-tested. Optimized Refill delay, ThrowPots timing, and reach values for classic Nodebuff/Debuff formats.' }
+        ]
+    };
+
+    // ── Navigation ──────────────────────────────────────────────
+    function switchPage(id) {
+        const cur = document.getElementById(AppState.currentView);
+        const tgt = document.getElementById(id);
+        if (!tgt || cur === tgt) return;
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        const link = document.querySelector(`.nav-link[data-target="${id}"]`);
+        if (link) link.classList.add('active');
+        updateNavSlider();
+        document.getElementById('main-content').scrollTo({top:0,behavior:'smooth'});
+        cur.animate([{opacity:1,transform:'translateY(0)'},{opacity:0,transform:'translateY(-8px)'}],{duration:260}).onfinish = () => {
+            cur.classList.remove('active'); tgt.classList.add('active'); AppState.currentView = id;
+        };
+    }
+
+    function updateNavSlider() {
+        const link = document.querySelector('.nav-link.active');
+        const slider = document.getElementById('nav-slider');
+        if (link && slider) {
+            slider.style.transform = `translateY(${link.offsetTop}px)`;
+            slider.style.height = `${link.offsetHeight}px`;
+            slider.style.opacity = '1';
+        } else if (slider) { slider.style.opacity = '0'; }
+    }
+
+    // ── Modal ──────────────────────────────────────────────────
+    function openModule(name, category) {
+        const all = [...Object.values(AppState.data).flat(), ...AppState.configs];
+        const item = all.find(i => i.name === name);
+        if (!item) return;
+        const cat = category || 'Combat';
+        const cls = AppState.catClass[cat] || 'misc';
+
+        document.getElementById('modal-title').textContent = item.name;
+        document.getElementById('modal-desc').textContent = item.desc;
+        document.getElementById('modal-deep-dive').textContent = item.deep || 'No technical breakdown available.';
+
+        const iconEl = document.getElementById('modal-icon');
+        iconEl.className = `ph-fill ${item.icon || 'ph-gear'} text-3xl`;
+
+        const wrap = document.getElementById('modal-icon-wrap');
+        wrap.className = `mod-icon ${cls} w-16 h-16 rounded-2xl`;
+
+        document.getElementById('module-modal').classList.add('active');
+    }
+
+    // ── Render ─────────────────────────────────────────────────
+    function generateCard(item, category) {
+        const cls = AppState.catClass[category] || 'misc';
+        const icon = item.icon || 'ph-gear';
+        return `<article class="glass-card p-7 flex flex-col justify-between group min-h-[200px] cursor-pointer module-card" data-name="${item.name}" data-category="${category}">
+            <div class="flex justify-between items-start mb-5">
+                <div class="mod-icon ${cls}"><i class="ph-fill ${icon}"></i></div>
+                <div class="free-badge"><span class="w-1 h-1 rounded-full bg-emerald-400 inline-block"></span>Free</div>
+            </div>
+            <div>
+                <h3 class="text-xl font-display font-bold mb-1.5 text-white uppercase text-glow">${item.name}</h3>
+                <p class="text-white/40 text-xs leading-relaxed mb-4 font-light">${item.desc}</p>
+                <button class="action-btn-trigger w-full py-2.5 rounded-xl font-bold text-[0.62rem] uppercase btn-base btn-ghost tracking-[0.14em]">View Details</button>
+            </div>
+        </article>`;
+    }
+
+    const catDotColors = {
+        Combat:'combat', Visuals:'visuals', Movement:'movement', Utils:'utils', Misc:'misc', Configs:'configs'
+    };
+
+    function render() {
+        let html = '';
+        for (const [cat, items] of Object.entries(AppState.data)) {
+            const cls = catDotColors[cat] || '';
+            html += `<div class="mb-14">
+                <div class="flex items-center gap-4 mb-7">
+                    <div class="cat-dot ${cls} w-2 h-2 rounded-full shrink-0"></div>
+                    <h3 class="text-xl font-display font-bold text-white uppercase italic text-glow">${cat}</h3>
+                    <div class="h-px bg-white/[0.07] flex-1"></div>
+                    <span class="text-[0.58rem] text-white/25 font-semibold uppercase tracking-widest">${items.length} modules</span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    ${items.map(i => generateCard(i, cat)).join('')}
+                </div>
+            </div>`;
+        }
+        document.getElementById('modules-container').innerHTML = html;
+
+        // Configs
+        const cfgHtml = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            ${AppState.configs.map(i => generateCard(i, 'Configs')).join('')}
+        </div>`;
+        document.getElementById('configs-container').innerHTML = cfgHtml;
+    }
+
+    // ── Typewriter ──────────────────────────────────────────────
+    function type() {
+        const el = document.getElementById('typewriter'); if (!el) return;
+        const word = AppState.words[AppState.wordIdx];
+        AppState.isDeleting
+            ? el.textContent = word.substring(0, --AppState.charIdx)
+            : el.textContent = word.substring(0, ++AppState.charIdx);
+        let speed = AppState.isDeleting ? 175 : 72;
+        if (!AppState.isDeleting && AppState.charIdx === word.length) { speed = 2100; AppState.isDeleting = true; }
+        else if (AppState.isDeleting && AppState.charIdx === 0) { AppState.isDeleting = false; AppState.wordIdx = (AppState.wordIdx+1)%AppState.words.length; speed = 520; }
+        setTimeout(type, speed);
+    }
+
+    // ── Sidebar nav ─────────────────────────────────────────────
+    function initNavigation() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('mobile-overlay');
+        const btn = document.getElementById('mobile-menu-btn');
+        const close = () => { sidebar.classList.add('-translate-x-full'); overlay.classList.add('hidden'); };
+        btn?.addEventListener('click', () => { sidebar.classList.contains('-translate-x-full') ? (sidebar.classList.remove('-translate-x-full'), overlay.classList.remove('hidden')) : close(); });
+        overlay?.addEventListener('click', close);
+        document.querySelectorAll('.nav-trigger').forEach(b => b.addEventListener('click', e => {
+            e.preventDefault();
+            const t = e.currentTarget.dataset.target;
+            if (t) { switchPage(t); if (window.innerWidth < 768) close(); }
+        }));
+    }
+
+    function initCardActions() {
+        document.body.addEventListener('click', e => {
+            const actionBtn = e.target.closest('.action-btn-trigger');
+            const modalBtn  = e.target.closest('#modal-action-btn');
+            const card      = e.target.closest('.module-card');
+
+            if (modalBtn)  { e.stopPropagation(); document.getElementById('module-modal').classList.remove('active'); switchPage('download'); return; }
+            if (actionBtn) { e.stopPropagation(); const c = actionBtn.closest('.module-card'); if(c) openModule(c.dataset.name, c.dataset.category); return; }
+            if (card)      { openModule(card.dataset.name, card.dataset.category); }
+        });
+        document.getElementById('close-modal').addEventListener('click', () => document.getElementById('module-modal').classList.remove('active'));
+        document.getElementById('module-modal').addEventListener('click', e => { if (e.target.id === 'module-modal') document.getElementById('module-modal').classList.remove('active'); });
+    }
+
+    // ── Particle BG & Cursor Interaction ────────────────────────
+    let canvas, ctx, parts = [];
+    let mouseX = -1000, mouseY = -1000;
+    
+    function initBg() {
+        canvas = document.getElementById('bg-canvas'); ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        parts = Array.from({length:65}, () => ({
+            x: Math.random()*canvas.width, y: Math.random()*canvas.height,
+            size: Math.random()*1.6+0.3, sx: (Math.random()-.5)*.28,
+            sy: Math.random()*.45+.12, op: Math.random()*.38+.12,
+            baseX: 0, baseY: 0
+        }));
+    }
+
+    window.addEventListener('mousemove', e => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        const glow = document.getElementById('mouse-glow');
+        if(glow) {
+            glow.style.transform = `translate(calc(-50% + ${mouseX}px), calc(-50% + ${mouseY}px))`;
+            glow.style.opacity = 1;
+        }
+    });
+
+    window.addEventListener('mouseout', () => {
+        mouseX = -1000; mouseY = -1000;
+        const glow = document.getElementById('mouse-glow');
+        if(glow) glow.style.opacity = 0;
+    });
+
+    function draw() {
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        parts.forEach(p => {
+            // Normal drift
+            p.x += p.sx; p.y -= p.sy;
+            if (p.y < 0) p.y = canvas.height;
+            if (p.x < 0) p.x = canvas.width;
+            if (p.x > canvas.width) p.x = 0;
+
+            // Interactive mouse dodge
+            let dx = p.x - mouseX;
+            let dy = p.y - mouseY;
+            let dist = Math.sqrt(dx * dx + dy * dy);
+            
+            if (dist < 120) {
+                const force = (120 - dist) / 120;
+                p.x += (dx / dist) * force * 3;
+                p.y += (dy / dist) * force * 3;
+            }
+
+            ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
+            ctx.shadowBlur=7; ctx.shadowColor='#fff'; ctx.fillStyle=`rgba(255,255,255,${p.op})`; ctx.fill();
+        });
+        requestAnimationFrame(draw);
+    }
+
+    // ── Boot ────────────────────────────────────────────────────
+    function bootApp() {
+        initCrowns();
+
+        const intro = document.getElementById('intro-screen');
+        let hidden = false;
+        function hideIntro() {
+            if (hidden) return; hidden = true;
+            intro.classList.add('hide-intro');
+            intro.addEventListener('transitionend', () => { intro.style.display='none'; }, {once:true});
+            setTimeout(() => { if(intro) intro.style.display='none'; }, 850);
+        }
+        intro?.addEventListener('click', hideIntro);
+        setTimeout(hideIntro, 1500);
+
+        render();
+        initNavigation();
+        initCardActions();
+        initBg(); draw();
+        window.addEventListener('resize', () => { initBg(); updateNavSlider(); });
+        setTimeout(type, 1050);
+        setTimeout(updateNavSlider, 120);
+    }
+
+    document.readyState === 'loading'
+        ? document.addEventListener('DOMContentLoaded', bootApp)
+        : bootApp();
+    </script>
+</body>
+</html>
